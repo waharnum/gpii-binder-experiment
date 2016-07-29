@@ -14,32 +14,24 @@
 
     fluid.defaults("gpii.binder.templateBinder", {
         gradeNames: ["fluid.viewComponent"],
-        selectors: {
-            // Equivalent generated selectors
-            // radioButtons: ".gpiic-binder-radio",
-            // checkboxes: ".gpiic-binder-checkbox",
-            // Equivalent selector block that should be generated from the template
-            // favouriteFruit: ".gpiic-binder-favouriteFruit",
-            // leastFavouriteFruit: ".gpiic-binder-leastFavouriteFruit"
-        },
         events: {
             onTemplatesReady: null
         },
         listeners: {
-            "onTemplatesReady.appendFormTemplate": {
+            "onTemplatesReady.appendbindingTemplate": {
                 "this": "{that}.container",
                 "method": "append",
-                args: ["{templateLoader}.resources.formTemplate.resourceText"]
+                args: ["{templateLoader}.resources.bindingTemplate.resourceText"]
             },
 
             "onTemplatesReady.generateSelectorsFromTemplate": {
                 funcName: "gpii.binder.templateBinder.generateSelectorsFromTemplate",
-                args: ["{that}", "{templateLoader}.resources.formTemplate.resourceText"],
-                priority: "after:appendFormTemplate"
+                args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+                priority: "after:appendbindingTemplate"
             },
             "onTemplatesReady.generateBindingsFromTemplate": {
                 funcName: "gpii.binder.templateBinder.generateBindingsFromTemplate",
-                args: ["{that}", "{templateLoader}.resources.formTemplate.resourceText"],
+                args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
                 priority: "after:generateSelectorsFromTemplate"
             },
             "onTemplatesReady.applyBindings": {
@@ -53,7 +45,8 @@
                 type: "fluid.resourceLoader",
                 options: {
                     resources: {
-                        formTemplate: "/src/html/template.html"
+                        // must be supplied by implementing grade, ex:
+                        // bindingTemplate: "/src/html/template.html"
                     },
                     listeners: {
                         "onResourcesLoaded.escalate": "{gpii.binder.templateBinder}.events.onTemplatesReady"
@@ -61,70 +54,9 @@
                 }
             },
         },
-        model: {
-            numberOfLemons: 2,
-            otherFruits: ["Pears"],
-            favouriteFruit: "Lemons",
-            leastFavouriteFruit: "Boysenberries"
-        },
         bindingRuleSets: {
             // "domToModel": "modelToDom"
             "domStringToModelNumber": "fluid.transforms.stringToNumber:fluid.transforms.numberToString"
-        },
-        bindings: {
-            // the equivalent bindings block generated from the template
-            // "numberOfLemons": {
-            //     selector: "radioButtons",
-            //     path: "numberOfLemons",
-            //     rules: {
-            //         domToModel: {
-            //             "": {
-            //                 transform: {
-            //                     type: "fluid.transforms.stringToNumber",
-            //                     inputPath: ""
-            //                 }
-            //             }
-            //         },
-            //         modelToDom: {
-            //             "": {
-            //                 transform: {
-            //                     type: "fluid.transforms.numberToString",
-            //                     inputPath: ""
-            //                 }
-            //             }
-            //         }
-            //     }
-            // },
-            // "checkboxes": "otherFruits",
-            // "favouriteFruit": "favouriteFruit",
-            // "leastFavouriteFruit": "leastFavouriteFruit"
-        },
-        modelListeners: {
-            "numberOfLemons": {
-                "this": "console",
-                "method": "log",
-                "args": ["numberOfLemons", "{that}.model.numberOfLemons"]
-            },
-            "otherFruits": {
-                "this": "console",
-                "method": "log",
-                "args": ["otherFruits", "{that}.model.otherFruits"]
-            },
-            "favouriteFruit": {
-                "this": "console",
-                "method": "log",
-                "args": ["favouriteFruit", "{that}.model.favouriteFruit"]
-            },
-            "leastFavouriteFruit": {
-                "this": "console",
-                "method": "log",
-                "args": ["leastFavouriteFruit", "{that}.model.leastFavouriteFruit"]
-            },
-            "lemonRating": {
-                "this": "console",
-                "method": "log",
-                "args": ["lemonRating", "{that}.model.lemonRating"]
-            }
         }
     });
 
@@ -137,7 +69,7 @@
             console.log(selectorOptions);
             that.options.selectors = selectorOptions;
         });
-        // Re-init the dombinder
+        // Re-init the dombinder after setting generated selectors
         fluid.initDomBinder(that, that.options.selectors);
     };
 
@@ -221,7 +153,72 @@
 
     };
 
-    gpii.binder.templateBinder(".gpiic-binder-form");
+    // A concrete example
+    fluid.defaults("gpii.binder.templateBinder.fruitPanel", {
+        gradeNames: ["gpii.binder.templateBinder"],
+        selectors: {
+            // Equivalent generated selectors
+            // radioButtons: ".gpiic-binder-radio",
+            // checkboxes: ".gpiic-binder-checkbox",
+            // Equivalent selector block that should be generated from the template
+            // favouriteFruit: ".gpiic-binder-favouriteFruit",
+            // leastFavouriteFruit: ".gpiic-binder-leastFavouriteFruit"
+        },
+        model: {
+            numberOfLemons: 2,
+            otherFruits: ["Pears"],
+            favouriteFruit: "Lemons",
+            leastFavouriteFruit: "Boysenberries"
+        },
+        bindings: {
+            // the equivalent bindings block generated from the template
+            // "numberOfLemons": {
+            //     selector: "radioButtons",
+            //     path: "numberOfLemons",
+            //     rules: {
+            //         domToModel: {
+            //             "": {
+            //                 transform: {
+            //                     type: "fluid.transforms.stringToNumber",
+            //                     inputPath: ""
+            //                 }
+            //             }
+            //         },
+            //         modelToDom: {
+            //             "": {
+            //                 transform: {
+            //                     type: "fluid.transforms.numberToString",
+            //                     inputPath: ""
+            //                 }
+            //             }
+            //         }
+            //     }
+            // },
+            // "checkboxes": "otherFruits",
+            // "favouriteFruit": "favouriteFruit",
+            // "leastFavouriteFruit": "leastFavouriteFruit"
+        },
+        // Generic model logger
+        modelListeners: {
+            "*": {
+                "this": "console",
+                "method": "log",
+                "args": ["modelChange", "{change}.path", "{change}.value"]
+            }
+        },
+        components: {
+            templateLoader: {
+                options: {
+                    resources: {
+                        // must be supplied by implementing grade, ex:
+                        bindingTemplate: "/src/html/fruitPanel-template.html"
+                    }
+                }
+            },
+        }
+    });
+
+    gpii.binder.templateBinder.fruitPanel(".gpiic-binder-form");
 
     </script>
 
