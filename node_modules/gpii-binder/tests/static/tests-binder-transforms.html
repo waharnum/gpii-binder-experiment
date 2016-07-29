@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Unit Tests for Binder Module  transform functions...</title>
+
+        <!-- Bring in jQuery and other dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+
+        <!-- Bring in fluid dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidDocument.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidDOMUtilities.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidIoC.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/DataBinding.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidView.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/ModelTransformation.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/ModelTransformationTransforms.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/enhancement/js/ContextAwareness.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/enhancement/js/ProgressiveEnhancement.js"></script>
+
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/utils/js/IoCTestUtils.js"></script>
+
+        <!-- QUnit/jqUnit dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/tests/lib/qunit/js/qunit.js"></script>
+        <script src="/testem.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit-browser.js"></script>
+
+        <!-- Our test fixtures -->
+        <script type="text/javascript" src="./js/tests-fixtures.js"></script>
+
+        <!-- Bring in client library being tested -->
+        <script type="text/javascript" src="./js/testem/coverage.js"></script>
+        <script type="text/javascript" src="/instrumented/js/binder.js"></script>
+        <script type="text/javascript" src="/instrumented/js/codingTransforms.js"></script>
+
+        <link rel="stylesheet" href="../../node_modules/node-jqunit/node_modules/infusion/tests/lib/qunit/css/qunit.css"/>
+    </head>
+    <body>
+        <h1 id="qunit-header">"Transform Function" Unit Tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+
+        <!-- our QUnit tests -->
+        <script type="text/javascript" src="./js/jqunit/jqunit-binder-transforms.js"></script>
+    </body>
+</html>

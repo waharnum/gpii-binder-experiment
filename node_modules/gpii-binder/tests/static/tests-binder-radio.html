@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>Unit Tests for Binder Module radio button support...</title>
+
+        <!-- Bring in jQuery and other dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+
+        <!-- Bring in fluid dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidDocument.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidDOMUtilities.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidIoC.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/DataBinding.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/FluidView.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/ModelTransformation.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/core/js/ModelTransformationTransforms.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/enhancement/js/ContextAwareness.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/src/framework/enhancement/js/ProgressiveEnhancement.js"></script>
+
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/utils/js/IoCTestUtils.js"></script>
+
+        <!-- QUnit/jqUnit dependencies -->
+        <script type="text/javascript" src="../../node_modules/infusion/tests/lib/qunit/js/qunit.js"></script>
+        <script src="/testem.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit-browser.js"></script>
+
+        <!-- Our test fixtures -->
+        <script type="text/javascript" src="./js/tests-fixtures.js"></script>
+
+        <!-- Bring in client library being tested -->
+        <script type="text/javascript" src="./js/testem/coverage.js"></script>
+        <script type="text/javascript" src="/instrumented/js/binder.js"></script>
+
+        <link rel="stylesheet" href="../../node_modules/node-jqunit/node_modules/infusion/tests/lib/qunit/css/qunit.css"/>
+    </head>
+    <body>
+        <h1 id="qunit-header">"Radio" Component Tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+
+        <!-- Test HTML, we have to hide this ourselves.  QUnit's styles put it offscreen, which doesn't work for us. -->
+        <div class="viewport-radio" style="display:none">
+            <form>
+                <h3>Model Update</h3>
+                <p>
+                    <input type="radio" id="update-from-model-markup" name="update-from-model" value="updated using form controls"/>
+                    <label for="update-from-model-markup">markup</label>
+                    <input type="radio" id="update-from-model-applier" name="update-from-model" value="updated using applier"/>
+                    <label for="update-from-model-applier">applier</label>
+                </p>
+
+                <h3>Markup Update</h3>
+                <p>
+                    <input type="radio" id="update-from-markup-markup" name="update-from-markup" value="updated using form controls"/>
+                    <label for="update-from-markup-markup">markup</label>
+                    <input type="radio" id="update-from-markup-applier" name="update-from-markup" value="updated using applier"/>
+                    <label for="update-from-model-applier">applier</label>
+                </p>
+
+                <h3>Model Init</h3>
+                <p>
+                    <input type="radio" id="init-from-model-markup" name="init-from-model" value="Set in markup."/>
+                    <label for="init-from-model-markup">markup</label>
+                    <input type="radio" id="init-from-model-model" name="init-from-model" value="initialized from model"/>
+                    <label for="init-from-model-model">model</label>
+                </p>
+
+                <h3>Markup Init</h3>
+                <p>
+                    <input type="radio" id="init-from-markup-markup" name="init-from-markup" value="initialized from markup" checked="true"/>
+                    <label for="init-from-markup-markup">markup</label>
+                    <input type="radio" id="init-from-markup-applier" name="init-from-markup" value="initialized from model"/>
+                    <label for="init-from-markup-applier">applier</label>
+                </p>
+            </form>
+        </div>
+
+        <!-- our QUnit tests -->
+        <script type="text/javascript" src="./js/jqunit/jqunit-binder-radio.js"></script>
+    </body>
+</html>

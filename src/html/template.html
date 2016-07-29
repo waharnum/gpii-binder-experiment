@@ -1,0 +1,24 @@
+<form>
+    <fieldset data-fluidSelector="radioButtons:.gpiic-binder-radio" data-gpiiBinder="radioButtons:numberOfLemons/domStringToModelNumber">
+        <legend>
+            How many lemons did you eat today?
+        </legend>
+        <label>Zero <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="0" /></label>
+        <label>One <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="1" /></label>
+        <label>Two <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="2" /></label>
+        <label>Three <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="3" /></label>
+    </fieldset>
+    <fieldset data-gpiiBinder="checkboxes:otherFruits" data-fluidSelector="checkboxes:.gpiic-binder-checkbox" >
+        <legend>
+            Did you eat any other kinds of fruit?
+        </legend>
+        <label>Peaches <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Peaches" /></label>
+        <label>Pears <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Pears" /></label>
+        <label>Plums <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Plums" /></label>
+        <label>Papayas <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Papayas" /></label>
+    </fieldset>
+    <label>What is your very favourite fruit? <input data-gpiiBinder="favouriteFruit:favouriteFruit" data-fluidSelector="favouriteFruit:.gpiic-binder-favouriteFruit" class="gpiic-binder-favouriteFruit" name="favouriteFruit" /> </label><br/>
+
+</br/>
+    <label>What is your least favourite fruit? <input data-gpiiBinder="leastFavouriteFruit:leastFavouriteFruit" data-fluidSelector="leastFavouriteFruit:.gpiic-binder-leastFavouriteFruit" class="gpiic-binder-leastFavouriteFruit" name="leastFavouriteFruit" /> </label>
+</form>

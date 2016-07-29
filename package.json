@@ -1,0 +1,7 @@
+{
+  "name": "gpii-binder-experiment",
+  "description": "gpii-binder-experiment",
+  "dependencies": {
+      "gpii-binder":"https://github.com/GPII/gpii-binder#f4bd55bace97c5eb8fc67ed108cef46f3214aa15"
+  }
+}
