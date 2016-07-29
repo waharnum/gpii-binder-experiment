@@ -60,6 +60,9 @@
         }
     });
 
+    // Parses an HTML template for selector-generation directives in this attribute style:
+    // data-fluidSelector="[selectorName]:[jQuerySelector]
+    // generates a selector option for each directive and re-inits the dom binder
     gpii.binder.templateBinder.generateSelectorsFromTemplate = function (that, template) {
         var templateSelectors = gpii.binder.templateBinder.getDirectivesFromElementAttributes(template, "data-fluidSelector");
         fluid.each(templateSelectors, function (templateSelector) {
@@ -73,6 +76,9 @@
         fluid.initDomBinder(that, that.options.selectors);
     };
 
+    // Parses an HTML template for binding-generation directives in this attribute style:
+    // data-gpiiBinder="[selectorName]:[modelPath]/[bindingRuleKey]"
+    // generates a binding option for each directive, and an optional binding rule
     gpii.binder.templateBinder.generateBindingsFromTemplate = function(that, template) {
 
         var templateBindings = gpii.binder.templateBinder.getDirectivesFromElementAttributes(template, "data-gpiiBinder");
