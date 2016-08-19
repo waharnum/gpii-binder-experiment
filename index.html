@@ -25,16 +25,19 @@
             // leastFavouriteFruit: ".gpiic-binder-leastFavouriteFruit"
         },
         model: {
-            numberOfLemons: 2,
-            otherFruits: ["Pears"],
-            favouriteFruit: "Lemons",
-            leastFavouriteFruit: "Boysenberries"
+            "fruitPanel": {
+                numberOfLemons: 2,
+                otherFruits: ["Pears"],
+                favouriteFruit: "Lemons",
+                leastFavouriteFruit: "Boysenberries",
+                lemonRating: 96
+            }
         },
         bindings: {
             // the equivalent bindings block generated from the template
             // "numberOfLemons": {
             //     selector: "radioButtons",
-            //     path: "numberOfLemons",
+            //     path: "fruitPanel.numberOfLemons",
             //     rules: {
             //         domToModel: {
             //             "": {
@@ -54,9 +57,31 @@
             //         }
             //     }
             // },
-            // "checkboxes": "otherFruits",
-            // "favouriteFruit": "favouriteFruit",
-            // "leastFavouriteFruit": "leastFavouriteFruit"
+            // "checkboxes": "fruitPanel.otherFruits",
+            // "favouriteFruit": "fruitPanel.favouriteFruit",
+            // "leastFavouriteFruit": "fruitPanel.leastFavouriteFruit",
+            // "lemonRating": {
+            //     selector: "lemonRating",
+            //     path: "fruitPanel.lemonRating",
+            //     rules: {
+            //         domToModel: {
+            //             "": {
+            //                 transform: {
+            //                     type: "fluid.transforms.stringToNumber",
+            //                     inputPath: ""
+            //                 }
+            //             }
+            //         },
+            //         modelToDom: {
+            //             "": {
+            //                 transform: {
+            //                     type: "fluid.transforms.numberToString",
+            //                     inputPath: ""
+            //                 }
+            //             }
+            //         }
+            //     }
+            // },
         },
         // Generic model logger
         modelListeners: {

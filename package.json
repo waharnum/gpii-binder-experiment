@@ -2,6 +2,7 @@
   "name": "gpii-binder-experiment",
   "description": "gpii-binder-experiment",
   "dependencies": {
-      "gpii-binder":"https://github.com/GPII/gpii-binder#f4bd55bace97c5eb8fc67ed108cef46f3214aa15"
+      "gpii-binder":"https://github.com/GPII/gpii-binder#f4bd55bace97c5eb8fc67ed108cef46f3214aa15",
+      "gpii-handlebars":"https://github.com/GPII/gpii-handlebars#1301018f8d7394154f81b113d5fbdcda4134e017"
   }
 }

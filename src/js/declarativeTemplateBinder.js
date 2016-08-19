@@ -20,7 +20,7 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
             priority: "after:generateSelectorsFromTemplate"
         },
-        "onTemplatesReady.applyBindings": {
+        "onTemplatesReady.applyBinding": {
             "funcName": "gpii.binder.applyBinding",
             "args":     "{that}",
             priority: "after:generateBindingsFromTemplate"
@@ -40,9 +40,10 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             }
         },
     },
+    // Define simple one-to-one transform rulesets such as string -> number for use in the declarative binding templates
     bindingRuleSets: {
         // "domToModel": "modelToDom"
-        "domStringToModelNumber": "fluid.transforms.stringToNumber:fluid.transforms.numberToString"
+        "stringToNumber": "fluid.transforms.stringToNumber:fluid.transforms.numberToString"
     }
 });
 
@@ -71,7 +72,7 @@ gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate = function(th
     fluid.each(templateBindings, function (templateBinding) {
         var selector, modelPath, bindingRule;
         var selectorAndModelPath = templateBinding.split("/")[0];
-        bindingRule = templateBinding.split("/")[1]
+        bindingRule = templateBinding.split("/")[1];
         selector = selectorAndModelPath.split(":")[0];
         modelPath = selectorAndModelPath.split(":")[1];
 
@@ -85,9 +86,16 @@ gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate = function(th
         fluid.set(bindingEntry[bindingKey], "path", modelPath);
 
         if(bindingRule) {
-            var ruleDefString = fluid.get(that.options.bindingRuleSets, bindingRule);
+            var ruleDefString;
+            // Binding rule shorthand case
+            if(bindingRule.indexOf(":") < 0) {
+                ruleDefString = fluid.get(that.options.bindingRuleSets, bindingRule);
+            // Longhand case    
+            } else {
+                ruleDefString = bindingRule;
+            }
             var ruleObj = gpii.binder.declarativeTemplateBinder.getRuleBlock(ruleDefString);
-            fluid.set(bindingEntry[bindingKey], "rules", ruleObj)
+            fluid.set(bindingEntry[bindingKey], "rules", ruleObj);
         }
 
         var bindingOptions = fluid.copy(that.options.bindings);
@@ -124,10 +132,10 @@ gpii.binder.declarativeTemplateBinder.getRuleBlock = function (ruleDefString) {
                 }
             }
         }
-    }
+    };
 
     return ruleBlock;
-}
+};
 
 gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes = function (template, attributeName) {
     var elementsWithAttribute = $('*[' + attributeName + ']');
