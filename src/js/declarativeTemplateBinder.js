@@ -1,5 +1,5 @@
 fluid.defaults("gpii.binder.declarativeTemplateBinder", {
-    gradeNames: ["fluid.viewComponent"],
+    gradeNames: ["gpii.binder.bindOnDomChange", "fluid.viewComponent"],
     events: {
         onTemplatesReady: null
     },
@@ -90,7 +90,7 @@ gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate = function(th
             // Binding rule shorthand case
             if(bindingRule.indexOf(":") < 0) {
                 ruleDefString = fluid.get(that.options.bindingRuleSets, bindingRule);
-            // Longhand case    
+            // Longhand case
             } else {
                 ruleDefString = bindingRule;
             }
