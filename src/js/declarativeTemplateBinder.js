@@ -99,31 +99,25 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
     var visibleUnlessDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleUnless");
 
     fluid.each(visibleIfDeclarations, function (declaration) {
-        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf", "showIf");
+        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
     });
     fluid.each(visibleUnlessDeclarations, function (declaration) {
-        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless", "showUnless");
+        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless");
     });
 };
 
-gpii.binder.declarativeTemplateBinder.handleShow = function (value, oldValue, pathSegs, attributeToMatch, showUnless) {
+gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = function (value, oldValue, pathSegs, attributeToMatch, trueOperation, falseOperation) {
     var changePath = pathSegs.join(".");
     var matchedElements = $("[" + attributeToMatch + "='"+ changePath + "']");
-    if(showUnless) {
-        value = !value;
-    }
-    value ? matchedElements.show() : matchedElements.hide();
+    value ? matchedElements[trueOperation]() : matchedElements[falseOperation]();
 };
 
 gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSegs) {
-    gpii.binder.declarativeTemplateBinder.handleShow(value, oldValue, pathSegs, "data-visibleIf", false);
-    // var changePath = pathSegs.join(".");
-    // var matchedElements = $("[data-visibleIf='"+ changePath + "']");
-    // value ? matchedElements.show() : matchedElements.hide();
+    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
 };
 
 gpii.binder.declarativeTemplateBinder.showUnless = function (value, oldValue, pathSegs) {
-    gpii.binder.declarativeTemplateBinder.handleShow(value, oldValue, pathSegs, "data-visibleUnless", true);
+    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleUnless", "hide", "show");
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:
