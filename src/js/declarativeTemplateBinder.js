@@ -103,14 +103,14 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
     fluid.each(visibleIfDeclarations, function (declaration) {
         // Complex case
         if(declaration.split(" ").length > 1) {
-            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration);
+            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-visibleIf");
         } else {
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
         }
     });
 };
 
-gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase) {
+gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase, dataAttributeMatch) {
     console.log("complex case");
     console.log(that, complexCase);
     var left = complexCase.split(" ")[0];
@@ -133,7 +133,7 @@ gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function 
     // Create the listener for actual toggle
     that.applier.modelChanged.addListener(generatedListenerBooleanPath, function() {
         console.log(arguments);
-        gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], "data-visibleIf", "show", "hide");
+        gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], dataAttributeMatch, "show", "hide");
     });
 };
 
