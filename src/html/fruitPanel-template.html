@@ -12,9 +12,21 @@
         <label>Four <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="4" /></label>
         <label>Five <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="5" /></label>
     </fieldset>
-    <fieldset data-gpiiBinder="checkboxes:fruitPanel.otherFruits" data-fluidSelector="checkboxes:.gpiic-binder-checkbox" >
+    <div>
+        <label>Did you eat any other fruit today?
+            <select class="gpiic-binder-selectBox" data-fluidSelector="selectBox:.gpiic-binder-selectBox" data-gpiiBinder="selectBox:fruitPanel.ateOtherFruit">
+                <option value="false">
+                No
+                </option>
+                <option value="true">
+                Yes
+                </option>
+            </select>
+        </label>
+    </div>
+    <fieldset data-visibleIf="fruitPanel.ateOtherFruitBool" data-gpiiBinder="checkboxes:fruitPanel.otherFruits" data-fluidSelector="checkboxes:.gpiic-binder-checkbox" >
         <legend>
-            Did you eat any other kinds of fruit?
+            What other fruit did you eat?
         </legend>
         <label>Peaches <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Peaches" /></label>
         <label>Pears <input class="gpiic-binder-checkbox" type="checkbox" name="otherFruit-checkbox" value="Pears" /></label>
@@ -33,5 +45,7 @@
     <input disabled="true" data-gpiiBinder="lemonRatingDisplay:fruitPanel.lemonRating" data-fluidSelector="lemonRatingDisplay:.gpiic-binder-lemonRatingDisplay" class="gpiic-binder-lemonRatingDisplay" /> </label><br />
     <span data-visibleIf="fruitPanel.reallyLikesLemons" class="gpiic-binder-lemonLikeMessage">Wow! You really like lemons!</span><br />
     <span data-visibleUnless="fruitPanel.reallyLikesLemons" class="gpiic-binder-lemonHateMessage">So we got a lemon-hater, huh?</span>
+    <span data-visibleIf="fruitPanel.lemonRating >= 100" class="gpiic-binder-lemonHateMessage"><br/>        
+    </br/>LEMON GOD</span>
 
 </form>

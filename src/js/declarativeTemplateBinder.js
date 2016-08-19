@@ -3,6 +3,9 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     events: {
         onTemplatesReady: null
     },
+    model: {
+        generatedListenerBooleans: {}
+    },
     listeners: {
         "onTemplatesReady.appendBindingTemplate": {
             "this": "{that}.container",
@@ -74,7 +77,7 @@ gpii.binder.declarativeTemplateBinder.compare = function (left, operator, right)
 };
 
 gpii.binder.conditionalBooleanApplier = function (that, path, left, operator, right) {
-    // console.log(that.applier);
+    console.log(arguments);
     that.applier.change(path, gpii.binder.declarativeTemplateBinder.compare (left, operator, right));
 };
 
@@ -99,15 +102,54 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
     var visibleUnlessDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleUnless");
 
     fluid.each(visibleIfDeclarations, function (declaration) {
-        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
+        // Complex case
+        if(declaration.split(" ").length > 1) {
+            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration);
+        } else {
+            that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
+        }
     });
     fluid.each(visibleUnlessDeclarations, function (declaration) {
         that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless");
     });
 };
 
+gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase) {
+    console.log("complex case");
+    console.log(that, complexCase);
+    var left = complexCase.split(" ")[0];
+    var operator = complexCase.split(" ")[1];
+    var right = complexCase.split(" ")[2];
+    console.log(left, operator, right);
+    var currentValueForComparison = fluid.get(that.model, left);
+    var initialBooleanValue = gpii.binder.declarativeTemplateBinder.compare(currentValueForComparison, operator, right);
+    console.log(that.model, currentValueForComparison, initialBooleanValue);
+
+    // Use complex case name as path for the generated listener boolean
+    var generatedListenerBooleanPath = "generatedListenerBooleans." + complexCase;
+    that.applier.change(generatedListenerBooleanPath, initialBooleanValue);
+
+    // Create the listener that updates the generated listener boolean when the watched value changes
+    that.applier.modelChanged.addListener(left, function(){
+        gpii.binder.conditionalBooleanApplier(that, generatedListenerBooleanPath, arguments[0], operator, right);
+    });
+
+    // Create the listener for actual toggle
+    that.applier.modelChanged.addListener(generatedListenerBooleanPath, function() {
+        console.log(arguments);
+        gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], "data-visibleIf", "show", "hide");
+    });
+};
+
 gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = function (value, oldValue, pathSegs, attributeToMatch, trueOperation, falseOperation) {
-    var changePath = pathSegs.join(".");
+    console.log(pathSegs);
+    var pathToMatch = pathSegs[0] === "generatedListenerBooleans" ? pathSegs.slice(1).join(".") : pathSegs.join(".");
+    if(pathSegs[0] === "generatedListenerBooleans") {
+        console.log("is from generatedListenerBooleans")
+        // pathSegs.shift();
+    }
+    console.log(pathSegs);
+    var changePath = pathToMatch;
     var matchedElements = $("[" + attributeToMatch + "='"+ changePath + "']");
     value ? matchedElements[trueOperation]() : matchedElements[falseOperation]();
 };
