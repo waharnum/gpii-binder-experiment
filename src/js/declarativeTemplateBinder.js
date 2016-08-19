@@ -99,7 +99,6 @@ gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (
 // Implements hide/show functionality based on model boolean values
 gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = function(that, template) {
     var visibleIfDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleIf");
-    var visibleUnlessDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleUnless");
 
     fluid.each(visibleIfDeclarations, function (declaration) {
         // Complex case
@@ -108,9 +107,6 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
         } else {
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
         }
-    });
-    fluid.each(visibleUnlessDeclarations, function (declaration) {
-        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless");
     });
 };
 
@@ -145,8 +141,7 @@ gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = fu
     console.log(pathSegs);
     var pathToMatch = pathSegs[0] === "generatedListenerBooleans" ? pathSegs.slice(1).join(".") : pathSegs.join(".");
     if(pathSegs[0] === "generatedListenerBooleans") {
-        console.log("is from generatedListenerBooleans")
-        // pathSegs.shift();
+        console.log("is from generatedListenerBooleans");
     }
     console.log(pathSegs);
     var changePath = pathToMatch;
@@ -156,10 +151,6 @@ gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = fu
 
 gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSegs) {
     gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
-};
-
-gpii.binder.declarativeTemplateBinder.showUnless = function (value, oldValue, pathSegs) {
-    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleUnless", "hide", "show");
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:

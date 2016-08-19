@@ -43,9 +43,9 @@
     <!-- note use of the longhand domToModel:modelToDom syntax for the binding transform -->
     <input type="range" min="1" max="100" step="1" value="1" data-gpiiBinder="lemonRating:fruitPanel.lemonRating/fluid.transforms.stringToNumber:fluid.transforms.numberToString" data-fluidSelector="lemonRating:.gpiic-binder-lemonRating" class="gpiic-binder-lemonRating" name="lemonRating" />
     <input disabled="true" data-gpiiBinder="lemonRatingDisplay:fruitPanel.lemonRating" data-fluidSelector="lemonRatingDisplay:.gpiic-binder-lemonRatingDisplay" class="gpiic-binder-lemonRatingDisplay" /> </label><br />
-    <span data-visibleIf="fruitPanel.reallyLikesLemons" class="gpiic-binder-lemonLikeMessage">Wow! You really like lemons!</span><br />
-    <span data-visibleUnless="fruitPanel.reallyLikesLemons" class="gpiic-binder-lemonHateMessage">So we got a lemon-hater, huh?</span>
-    <span data-visibleIf="fruitPanel.lemonRating >= 100" class="gpiic-binder-lemonHateMessage"><br/>        
+    <span data-visibleIf="fruitPanel.lemonRating > 50" class="gpiic-binder-lemonLikeMessage">Wow! You really like lemons!</span><br />
+    <span data-visibleIf="fruitPanel.lemonRating < 51" class="gpiic-binder-lemonHateMessage">So we got a lemon-hater, huh?</span>
+    <span data-visibleIf="fruitPanel.lemonRating >= 100" class="gpiic-binder-lemonHateMessage"><br/>
     </br/>LEMON GOD</span>
 
 </form>
