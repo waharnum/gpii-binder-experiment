@@ -20,6 +20,11 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
             priority: "after:generateSelectorsFromTemplate"
         },
+        "onTemplatesReady.generateVisibilityHandlersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
+            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            priority: "after:generateBindingsFromTemplate"
+        },
         "onTemplatesReady.applyBinding": {
             "funcName": "gpii.binder.applyBinding",
             "args":     "{that}",
@@ -44,8 +49,34 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     bindingRuleSets: {
         // "domToModel": "modelToDom"
         "stringToNumber": "fluid.transforms.stringToNumber:fluid.transforms.numberToString"
+    },
+    invokers: {
+        conditionalBooleanApplier: {
+            funcName: "gpii.binder.conditionalBooleanApplier",
+            args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
+        }
     }
 });
+
+// Works with conditionalBooleanApplier to return true or false value based
+// on three-argument tests, i.e. "{change}.value", ">=", 95
+gpii.binder.declarativeTemplateBinder.compare = function (left, operator, right) {
+    switch (operator) {
+        case '>':   return left > right;
+        case '<':   return left < right;
+        case '>=':  return left >= right;
+        case '<=':  return left <= right;
+        case '==':  return left == right;
+        case '!=':  return left != right;
+        case '===': return left === right;
+        case '!==': return left !== right;
+    }
+};
+
+gpii.binder.conditionalBooleanApplier = function (that, path, left, operator, right) {
+    // console.log(that.applier);
+    that.applier.change(path, gpii.binder.declarativeTemplateBinder.compare (left, operator, right));
+};
 
 // Parses an HTML template for selector-generation directives in this attribute style:
 // data-fluidSelector="[selectorName]:[jQuerySelector]
@@ -60,6 +91,39 @@ gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (
     });
     // Re-init the dombinder after setting generated selectors
     fluid.initDomBinder(that, that.options.selectors);
+};
+
+// Implements hide/show functionality based on model boolean values
+gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = function(that, template) {
+    var visibleIfDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleIf");
+    var visibleUnlessDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleUnless");
+
+    fluid.each(visibleIfDeclarations, function (declaration) {
+        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf", "showIf");
+    });
+    fluid.each(visibleUnlessDeclarations, function (declaration) {
+        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless", "showUnless");
+    });
+};
+
+gpii.binder.declarativeTemplateBinder.handleShow = function (value, oldValue, pathSegs, attributeToMatch, showUnless) {
+    var changePath = pathSegs.join(".");
+    var matchedElements = $("[" + attributeToMatch + "='"+ changePath + "']");
+    if(showUnless) {
+        value = !value;
+    }
+    value ? matchedElements.show() : matchedElements.hide();
+};
+
+gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSegs) {
+    gpii.binder.declarativeTemplateBinder.handleShow(value, oldValue, pathSegs, "data-visibleIf", false);
+    // var changePath = pathSegs.join(".");
+    // var matchedElements = $("[data-visibleIf='"+ changePath + "']");
+    // value ? matchedElements.show() : matchedElements.hide();
+};
+
+gpii.binder.declarativeTemplateBinder.showUnless = function (value, oldValue, pathSegs) {
+    gpii.binder.declarativeTemplateBinder.handleShow(value, oldValue, pathSegs, "data-visibleUnless", true);
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:

@@ -26,11 +26,12 @@
         },
         model: {
             "fruitPanel": {
-                numberOfLemons: 2,
+                numberOfLemons: 0,
                 otherFruits: ["Pears"],
                 favouriteFruit: "Lemons",
                 leastFavouriteFruit: "Boysenberries",
-                lemonRating: 96
+                lemonRating: 1,
+                reallyLikesLemons: false
             }
         },
         bindings: {
@@ -83,19 +84,22 @@
             //     }
             // },
         },
-        // Generic model logger
+        // Generic model logger for demo purposes
         modelListeners: {
             "*": {
                 "this": "console",
                 "method": "log",
                 "args": ["modelChange", "{change}.path", "{change}.value"]
+            },
+            "fruitPanel.lemonRating": {
+                "funcName": "{that}.conditionalBooleanApplier",
+                "args": ["fruitPanel.reallyLikesLemons", "{change}.value", ">=", 95]
             }
         },
         components: {
             templateLoader: {
                 options: {
                     resources: {
-                        // must be supplied by implementing grade, ex:
                         bindingTemplate: "/src/html/fruitPanel-template.html"
                     }
                 }
