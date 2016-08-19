@@ -77,7 +77,6 @@ gpii.binder.declarativeTemplateBinder.compare = function (left, operator, right)
 };
 
 gpii.binder.conditionalBooleanApplier = function (that, path, left, operator, right) {
-    console.log(arguments);
     that.applier.change(path, gpii.binder.declarativeTemplateBinder.compare (left, operator, right));
 };
 
@@ -111,15 +110,11 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
 };
 
 gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase, dataAttributeMatch) {
-    console.log("complex case");
-    console.log(that, complexCase);
     var left = complexCase.split(" ")[0];
     var operator = complexCase.split(" ")[1];
     var right = complexCase.split(" ")[2];
-    console.log(left, operator, right);
     var currentValueForComparison = fluid.get(that.model, left);
     var initialBooleanValue = gpii.binder.declarativeTemplateBinder.compare(currentValueForComparison, operator, right);
-    console.log(that.model, currentValueForComparison, initialBooleanValue);
 
     // Use complex case name as path for the generated listener boolean
     var generatedListenerBooleanPath = "generatedListenerBooleans." + complexCase;
@@ -132,18 +127,12 @@ gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function 
 
     // Create the listener for actual toggle
     that.applier.modelChanged.addListener(generatedListenerBooleanPath, function() {
-        console.log(arguments);
         gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], dataAttributeMatch, "show", "hide");
     });
 };
 
 gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = function (value, oldValue, pathSegs, attributeToMatch, trueOperation, falseOperation) {
-    console.log(pathSegs);
     var pathToMatch = pathSegs[0] === "generatedListenerBooleans" ? pathSegs.slice(1).join(".") : pathSegs.join(".");
-    if(pathSegs[0] === "generatedListenerBooleans") {
-        console.log("is from generatedListenerBooleans");
-    }
-    console.log(pathSegs);
     var changePath = pathToMatch;
     var matchedElements = $("[" + attributeToMatch + "='"+ changePath + "']");
     value ? matchedElements[trueOperation]() : matchedElements[falseOperation]();
