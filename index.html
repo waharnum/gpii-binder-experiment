@@ -23,6 +23,9 @@
             // favouriteFruit: ".gpiic-binder-favouriteFruit",
             // leastFavouriteFruit: ".gpiic-binder-leastFavouriteFruit"
         },
+        templateConfig: {
+            initialTemplate: "page1Template"    
+        },
         model: {
             "fruitPanel": {
                 numberOfLemons: 0,
@@ -100,7 +103,7 @@
             templateLoader: {
                 options: {
                     resources: {
-                        bindingTemplate: "/src/html/fruitPanel-template.html",
+                        page1Template: "/src/html/fruitPanel-template.html",
                         page2Template: "/src/html/fruitPanel-template-page2.html"
                     }
                 }

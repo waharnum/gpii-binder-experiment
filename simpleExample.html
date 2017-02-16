@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title>Valerian - Simple Example</title>
+        <script src="src/lib/infusion/infusion-all.js"></script>
+        <script src="src/lib/gpii-binder/binder.js"></script>
+        <script src="src/lib/gpii-binder/codingTransforms.js"></script>
+        <script src="src/js/declarativeTemplateBinder.js"></script>
+    </head>
+    <body>
+        <h1>Valerian - Simple Example</h1>
+        <div class="gpiic-binder-form">
+        </div>
+
+    <script>
+
+    // A concrete example
+    fluid.defaults("gpii.binder.declarativeTemplateBinder.fruitPanel", {
+        gradeNames: ["gpii.binder.declarativeTemplateBinder"],
+        model: {
+            "personalInformation": {
+                "firstName": "",
+                "lastName": ""
+            }
+        },
+        templateConfig: {
+            initialTemplate: "personalInformationForm"
+        },
+        // Generic model logger for demo purposes
+        modelListeners: {
+            "*": {
+                "this": "console",
+                "method": "log",
+                "args": ["modelChange", "{change}.path", "{change}.value"]
+            }
+        },
+        components: {
+            templateLoader: {
+                options: {
+                    resources: {
+                        personalInformationForm: "/src/html/personalInformationForm.html",
+                        personalInformationConfirmation: "/src/html/personalInformationConfirmation.html"
+                    }
+                }
+            },
+        },
+        invokers: {
+            submitForConfirmation: {
+                funcName: "gpii.binder.declarativeTemplateBinder.replaceTemplate",
+                args: ["{that}", "personalInformationConfirmation"]
+            }
+        }
+    });
+
+    var fruitPanel = gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
+
+    </script>
+
+    </body>
+</html>

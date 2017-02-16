@@ -4,9 +4,16 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
         onTemplatesReady: null,
         onTemplateChanged: null
     },
+    templateConfig: {
+        // Must be supplied by implementing grade
+        // Must be a key in templateLoader.options.resources
+        // initialTemplate: "page1Template"
+    },
     members: {
         currentTemplate: ""
     },
+    selectors: {},
+    bindings: {},
     model: {
         generatedListenerBooleans: {}
     },
@@ -80,8 +87,11 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
 });
 
 gpii.binder.declarativeTemplateBinder.setInitialTemplate = function (that) {
-    var initialTemplate = that.templateLoader.resources.bindingTemplate.resourceText;
-    that.currentTemplate = initialTemplate;
+
+    var initialTemplate = that.options.templateConfig.initialTemplate;
+
+    var resourceText = that.templateLoader.resources[initialTemplate].resourceText;
+    that.currentTemplate = resourceText;
     that.events.onTemplateChanged.fire();
 };
 
@@ -89,7 +99,6 @@ gpii.binder.declarativeTemplateBinder.setInitialTemplate = function (that) {
 // retaining the model
 // expects a templateName that resolves to a key in templateLoader.resources
 gpii.binder.declarativeTemplateBinder.replaceTemplate = function (that, templateName) {
-    console.log("replaceTemplate")
     // Delete any generated listener booleans
     that.applier.change("generatedListenerBooleans", {}, "DELETE");
 
@@ -127,6 +136,7 @@ gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (
     var templateSelectors = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-valerianSelector");
     fluid.each(templateSelectors, function (templateSelector) {
         var selectorBlock = gpii.binder.declarativeTemplateBinder.getSelectorBlock(templateSelector);
+        // TODO: fails if that.options.selectors undefined
         var selectorOptions = fluid.copy(that.options.selectors);
         $.extend(selectorOptions, selectorBlock);
         that.options.selectors = selectorOptions;
