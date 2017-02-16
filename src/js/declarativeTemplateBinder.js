@@ -42,8 +42,8 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             args: ["{that}", "{that}.currentTemplate"],
             priority: "after:applyBinding"
         },
-        "onTemplateChanged.generateEventListenersFromTemplate": {
-            funcName: "gpii.binder.declarativeTemplateBinder.generateEventListenersFromTemplate",
+        "onTemplateChanged.generateDOMEventListenersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate",
             args: ["{that}", "{that}.currentTemplate"],
             priority: "after:generateVisibilityHandlersFromTemplate"
         }
@@ -188,8 +188,12 @@ gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSe
     gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
 };
 
-gpii.binder.declarativeTemplateBinder.generateEventListenersFromTemplate = function(that, template) {
-    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-fluidInvoker");
+// Parses an HTML template for dom event listener directives in this attribute style:
+// data-domEventBinder="[selectorName]:[event]:[0-arg invoker]"
+// generates an event listener as appropriate
+
+gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate = function(that, template) {
+    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-domEventBinder");
 
     fluid.each(eventListenerDeclarations, function (declaration) {
         var selector, eventType, invoker;
@@ -197,8 +201,6 @@ gpii.binder.declarativeTemplateBinder.generateEventListenersFromTemplate = funct
         selector = declaration.split(":")[0];
         eventType = declaration.split(":")[1];
         invoker = declaration.split(":")[2];
-
-        console.log(selector, eventType, invoker);
 
         var element = that.locate(selector);
         element[eventType](function (e) {
