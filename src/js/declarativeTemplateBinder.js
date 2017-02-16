@@ -105,9 +105,10 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
             gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-visibleIf");
         } else {
             var initialBooleanValue = fluid.get(that.model, declaration);
-            console.log(initialBooleanValue);
-            console.log(declaration);
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
+
+            // Trigger change to initial state (this needs a better implementation)
+            that.applier.change(declaration, "");
             that.applier.change(declaration, initialBooleanValue);
         }
     });
