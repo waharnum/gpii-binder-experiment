@@ -72,10 +72,9 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             funcName: "gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier",
             args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
         },
-
         replaceTemplate: {
             funcName: "gpii.binder.declarativeTemplateBinder.replaceTemplate",
-            args: ["{that}"]
+            args: ["{that}", "{arguments}.0"]
         }
     }
 });
@@ -86,16 +85,18 @@ gpii.binder.declarativeTemplateBinder.setInitialTemplate = function (that) {
     that.events.onTemplateChanged.fire();
 };
 
-// Replace the current template and redo all the bindings, while retaining the model
-gpii.binder.declarativeTemplateBinder.replaceTemplate = function (that) {
-
+// Replace the current template and redo all the bindings, while
+// retaining the model
+// expects a templateName that resolves to a key in templateLoader.resources
+gpii.binder.declarativeTemplateBinder.replaceTemplate = function (that, templateName) {
+    console.log("replaceTemplate")
     // Delete any generated listener booleans
     that.applier.change("generatedListenerBooleans", {}, "DELETE");
 
     // Clear selectors
     that.options.selectors = {};
 
-    var replacement = that.templateLoader.resources.page2Template.resourceText;
+    var replacement = that.templateLoader.resources[templateName].resourceText;
     that.currentTemplate = replacement;
     that.events.onTemplateChanged.fire();
 };
