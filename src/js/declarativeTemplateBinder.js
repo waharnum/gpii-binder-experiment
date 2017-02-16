@@ -23,15 +23,15 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
             priority: "after:generateSelectorsFromTemplate"
         },
-        "onTemplatesReady.generateVisibilityHandlersFromTemplate": {
-            funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
-            priority: "after:generateBindingsFromTemplate"
-        },
         "onTemplatesReady.applyBinding": {
             "funcName": "gpii.binder.applyBinding",
             "args":     "{that}",
             priority: "after:generateBindingsFromTemplate"
+        },
+        "onTemplatesReady.generateVisibilityHandlersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
+            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            priority: "after:applyBinding"
         }
     },
     components: {
@@ -55,7 +55,7 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     },
     invokers: {
         conditionalBooleanApplier: {
-            funcName: "gpii.binder.conditionalBooleanApplier",
+            funcName: "gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier",
             args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
         }
     }
@@ -76,7 +76,7 @@ gpii.binder.declarativeTemplateBinder.compare = function (left, operator, right)
     }
 };
 
-gpii.binder.conditionalBooleanApplier = function (that, path, left, operator, right) {
+gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier = function (that, path, left, operator, right) {
     that.applier.change(path, gpii.binder.declarativeTemplateBinder.compare (left, operator, right));
 };
 
@@ -104,7 +104,11 @@ gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = f
         if(declaration.split(" ").length > 1) {
             gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-visibleIf");
         } else {
+            var initialBooleanValue = fluid.get(that.model, declaration);
+            console.log(initialBooleanValue);
+            console.log(declaration);
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
+            that.applier.change(declaration, initialBooleanValue);
         }
     });
 };
@@ -118,17 +122,19 @@ gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function 
 
     // Use complex case name as path for the generated listener boolean
     var generatedListenerBooleanPath = "generatedListenerBooleans." + complexCase;
-    that.applier.change(generatedListenerBooleanPath, initialBooleanValue);
 
     // Create the listener that updates the generated listener boolean when the watched value changes
     that.applier.modelChanged.addListener(left, function(){
-        gpii.binder.conditionalBooleanApplier(that, generatedListenerBooleanPath, arguments[0], operator, right);
+        gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier(that, generatedListenerBooleanPath, arguments[0], operator, right);
     });
 
     // Create the listener for actual toggle
     that.applier.modelChanged.addListener(generatedListenerBooleanPath, function() {
         gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], dataAttributeMatch, "show", "hide");
     });
+
+    // Apply the change now so the listeners will pick it up
+    that.applier.change(generatedListenerBooleanPath, initialBooleanValue);
 };
 
 gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = function (value, oldValue, pathSegs, attributeToMatch, trueOperation, falseOperation) {
