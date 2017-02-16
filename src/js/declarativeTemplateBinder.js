@@ -120,10 +120,10 @@ gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier = function (that
 };
 
 // Parses an HTML template for selector-generation directives in this attribute style:
-// data-fluidSelector="[selectorName]:[jQuerySelector]
+// data-valerianSelector="[selectorName]:[jQuerySelector]
 // generates a selector option for each directive and re-inits the dom binder
 gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (that, template) {
-    var templateSelectors = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-fluidSelector");
+    var templateSelectors = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-valerianSelector");
     fluid.each(templateSelectors, function (templateSelector) {
         var selectorBlock = gpii.binder.declarativeTemplateBinder.getSelectorBlock(templateSelector);
         var selectorOptions = fluid.copy(that.options.selectors);
@@ -136,12 +136,12 @@ gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (
 
 // Implements hide/show functionality based on model boolean values
 gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = function(that, template) {
-    var visibleIfDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleIf");
+    var visibleIfDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-valerianVisibleIf");
 
     fluid.each(visibleIfDeclarations, function (declaration) {
         // Complex case
         if(declaration.split(" ").length > 1) {
-            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-visibleIf");
+            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-valerianVisibleIf");
         } else {
             var initialBooleanValue = fluid.get(that.model, declaration);
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
@@ -185,15 +185,15 @@ gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = fu
 };
 
 gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSegs) {
-    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
+    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-valerianVisibleIf", "show", "hide");
 };
 
 // Parses an HTML template for dom event listener directives in this attribute style:
-// data-domEventBinder="[selectorName]:[event]:[0-arg invoker]"
+// data-valerianDOMEventBinder="[selectorName]:[event]:[0-arg invoker]"
 // generates an event listener as appropriate
 
 gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate = function(that, template) {
-    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-domEventBinder");
+    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-valerianDOMEventBinder");
 
     fluid.each(eventListenerDeclarations, function (declaration) {
         var selector, eventType, invoker;
@@ -212,11 +212,11 @@ gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate = fu
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:
-// data-gpiiBinder="[selectorName]:[modelPath]/[bindingRuleKey]"
+// data-valerianBinder="[selectorName]:[modelPath]/[bindingRuleKey]"
 // generates a binding option for each directive, and an optional binding rule
 gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate = function(that, template) {
 
-    var templateBindings = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-gpiiBinder");
+    var templateBindings = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-valerianBinder");
 
     fluid.each(templateBindings, function (templateBinding) {
         var selector, modelPath, bindingRule;
