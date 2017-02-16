@@ -1,0 +1,25 @@
+<form>
+    <!-- in the context of the declarative template, it makes the most sense to define the common radio button binding as a fieldset-->
+    <!-- note use of the shorthand bindingRuleSet set for the binding transform -->
+    <fieldset data-fluidSelector="radioButtons:.gpiic-binder-radio" data-gpiiBinder="radioButtons:fruitPanel.numberOfLemons/stringToNumber">
+        <legend>
+            How many lemons did you eat today?
+        </legend>
+        <label>Zero <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="0" /></label>
+        <label>One <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="1" /></label>
+        <label>Two <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="2" /></label>
+        <label>Three <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="3" /></label>
+        <label>Four <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="4" /></label>
+        <label>Five <input class="gpiic-binder-radio" type="radio" name="lemons-radio" value="5" /></label>
+    </fieldset>
+
+    <label>On a scale of 1-100, how much do you like lemons?<br>
+    <!-- note use of the longhand domToModel:modelToDom syntax for the binding transform -->
+    <input type="range" min="1" max="100" step="1" value="1" data-gpiiBinder="lemonRating:fruitPanel.lemonRating/fluid.transforms.stringToNumber:fluid.transforms.numberToString" data-fluidSelector="lemonRating:.gpiic-binder-lemonRating" class="gpiic-binder-lemonRating" name="lemonRating" />
+    <input disabled="true" data-gpiiBinder="lemonRatingDisplay:fruitPanel.lemonRating" data-fluidSelector="lemonRatingDisplay:.gpiic-binder-lemonRatingDisplay" class="gpiic-binder-lemonRatingDisplay" /> </label><br />
+    <span data-visibleIf="fruitPanel.lemonRating > 50" class="gpiic-binder-lemonLikeMessage">Wow! You really like lemons!</span><br />
+    <span data-visibleIf="fruitPanel.lemonRating < 51" class="gpiic-binder-lemonHateMessage">So we got a lemon-hater, huh?</span>
+    <span data-visibleIf="fruitPanel.lemonRating >= 100" class="gpiic-binder-lemonHateMessage"><br/>
+    </br/>LEMON GOD</span>
+
+</form>

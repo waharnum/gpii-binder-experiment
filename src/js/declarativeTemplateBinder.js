@@ -1,37 +1,51 @@
 fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     gradeNames: ["gpii.binder.bindOnDomChange", "fluid.viewComponent"],
     events: {
-        onTemplatesReady: null
+        onTemplatesReady: null,
+        onTemplateChanged: null
+    },
+    members: {
+        currentTemplate: ""
     },
     model: {
         generatedListenerBooleans: {}
     },
     listeners: {
-        "onTemplatesReady.appendBindingTemplate": {
+        "onTemplatesReady.setInitialTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.setInitialTemplate",
+            args: ["{that}"],
+            priority: "first"
+        },
+        "onTemplateChanged.appendBindingTemplate": {
             "this": "{that}.container",
-            "method": "append",
-            args: ["{templateLoader}.resources.bindingTemplate.resourceText"]
+            "method": "html",
+            args: ["{that}.currentTemplate"]
         },
 
-        "onTemplatesReady.generateSelectorsFromTemplate": {
+        "onTemplateChanged.generateSelectorsFromTemplate": {
             funcName: "gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            args: ["{that}", "{that}.currentTemplate"],
             priority: "after:appendBindingTemplate"
         },
-        "onTemplatesReady.generateBindingsFromTemplate": {
+        "onTemplateChanged.generateBindingsFromTemplate": {
             funcName: "gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            args: ["{that}", "{that}.currentTemplate"],
             priority: "after:generateSelectorsFromTemplate"
         },
-        "onTemplatesReady.generateVisibilityHandlersFromTemplate": {
-            funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
-            priority: "after:generateBindingsFromTemplate"
-        },
-        "onTemplatesReady.applyBinding": {
+        "onTemplateChanged.applyBinding": {
             "funcName": "gpii.binder.applyBinding",
             "args":     "{that}",
             priority: "after:generateBindingsFromTemplate"
+        },
+        "onTemplateChanged.generateVisibilityHandlersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
+            args: ["{that}", "{that}.currentTemplate"],
+            priority: "after:applyBinding"
+        },
+        "onTemplateChanged.generateDOMEventListenersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate",
+            args: ["{that}", "{that}.currentTemplate"],
+            priority: "after:generateVisibilityHandlersFromTemplate"
         }
     },
     components: {
@@ -55,11 +69,36 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     },
     invokers: {
         conditionalBooleanApplier: {
-            funcName: "gpii.binder.conditionalBooleanApplier",
+            funcName: "gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier",
             args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
+        },
+
+        replaceTemplate: {
+            funcName: "gpii.binder.declarativeTemplateBinder.replaceTemplate",
+            args: ["{that}"]
         }
     }
 });
+
+gpii.binder.declarativeTemplateBinder.setInitialTemplate = function (that) {
+    var initialTemplate = that.templateLoader.resources.bindingTemplate.resourceText;
+    that.currentTemplate = initialTemplate;
+    that.events.onTemplateChanged.fire();
+};
+
+// Replace the current template and redo all the bindings, while retaining the model
+gpii.binder.declarativeTemplateBinder.replaceTemplate = function (that) {
+
+    // Delete any generated listener booleans
+    that.applier.change("generatedListenerBooleans", {}, "DELETE");
+
+    // Clear selectors
+    that.options.selectors = {};
+
+    var replacement = that.templateLoader.resources.page2Template.resourceText;
+    that.currentTemplate = replacement;
+    that.events.onTemplateChanged.fire();
+};
 
 // Works with conditionalBooleanApplier to return true or false value based
 // on three-argument tests, i.e. "{change}.value", ">=", 95
@@ -76,8 +115,7 @@ gpii.binder.declarativeTemplateBinder.compare = function (left, operator, right)
     }
 };
 
-gpii.binder.conditionalBooleanApplier = function (that, path, left, operator, right) {
-    console.log(arguments);
+gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier = function (that, path, left, operator, right) {
     that.applier.change(path, gpii.binder.declarativeTemplateBinder.compare (left, operator, right));
 };
 
@@ -99,56 +137,48 @@ gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate = function (
 // Implements hide/show functionality based on model boolean values
 gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate = function(that, template) {
     var visibleIfDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleIf");
-    var visibleUnlessDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-visibleUnless");
 
     fluid.each(visibleIfDeclarations, function (declaration) {
         // Complex case
         if(declaration.split(" ").length > 1) {
-            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration);
+            gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase(that, declaration, "data-visibleIf");
         } else {
+            var initialBooleanValue = fluid.get(that.model, declaration);
             that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showIf");
+
+            // Trigger change to initial state (this needs a better implementation)
+            that.applier.change(declaration, "");
+            that.applier.change(declaration, initialBooleanValue);
         }
-    });
-    fluid.each(visibleUnlessDeclarations, function (declaration) {
-        that.applier.modelChanged.addListener(declaration, "gpii.binder.declarativeTemplateBinder.showUnless");
     });
 };
 
-gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase) {
-    console.log("complex case");
-    console.log(that, complexCase);
+gpii.binder.declarativeTemplateBinder.generateListenerForComplexCase = function (that, complexCase, dataAttributeMatch) {
     var left = complexCase.split(" ")[0];
     var operator = complexCase.split(" ")[1];
     var right = complexCase.split(" ")[2];
-    console.log(left, operator, right);
     var currentValueForComparison = fluid.get(that.model, left);
     var initialBooleanValue = gpii.binder.declarativeTemplateBinder.compare(currentValueForComparison, operator, right);
-    console.log(that.model, currentValueForComparison, initialBooleanValue);
 
     // Use complex case name as path for the generated listener boolean
     var generatedListenerBooleanPath = "generatedListenerBooleans." + complexCase;
-    that.applier.change(generatedListenerBooleanPath, initialBooleanValue);
 
     // Create the listener that updates the generated listener boolean when the watched value changes
     that.applier.modelChanged.addListener(left, function(){
-        gpii.binder.conditionalBooleanApplier(that, generatedListenerBooleanPath, arguments[0], operator, right);
+        gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier(that, generatedListenerBooleanPath, arguments[0], operator, right);
     });
 
     // Create the listener for actual toggle
     that.applier.modelChanged.addListener(generatedListenerBooleanPath, function() {
-        console.log(arguments);
-        gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], "data-visibleIf", "show", "hide");
+        gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(arguments[0], arguments[1], arguments[2], dataAttributeMatch, "show", "hide");
     });
+
+    // Apply the change now so the listeners will pick it up
+    that.applier.change(generatedListenerBooleanPath, initialBooleanValue);
 };
 
 gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = function (value, oldValue, pathSegs, attributeToMatch, trueOperation, falseOperation) {
-    console.log(pathSegs);
     var pathToMatch = pathSegs[0] === "generatedListenerBooleans" ? pathSegs.slice(1).join(".") : pathSegs.join(".");
-    if(pathSegs[0] === "generatedListenerBooleans") {
-        console.log("is from generatedListenerBooleans")
-        // pathSegs.shift();
-    }
-    console.log(pathSegs);
     var changePath = pathToMatch;
     var matchedElements = $("[" + attributeToMatch + "='"+ changePath + "']");
     value ? matchedElements[trueOperation]() : matchedElements[falseOperation]();
@@ -158,8 +188,27 @@ gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSe
     gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
 };
 
-gpii.binder.declarativeTemplateBinder.showUnless = function (value, oldValue, pathSegs) {
-    gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleUnless", "hide", "show");
+// Parses an HTML template for dom event listener directives in this attribute style:
+// data-domEventBinder="[selectorName]:[event]:[0-arg invoker]"
+// generates an event listener as appropriate
+
+gpii.binder.declarativeTemplateBinder.generateDOMEventListenersFromTemplate = function(that, template) {
+    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-domEventBinder");
+
+    fluid.each(eventListenerDeclarations, function (declaration) {
+        var selector, eventType, invoker;
+
+        selector = declaration.split(":")[0];
+        eventType = declaration.split(":")[1];
+        invoker = declaration.split(":")[2];
+
+        var element = that.locate(selector);
+        element[eventType](function (e) {
+            that[invoker]();
+            e.preventDefault();
+        });
+
+    });
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:

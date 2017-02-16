@@ -90,10 +90,6 @@
                 "method": "log",
                 "args": ["modelChange", "{change}.path", "{change}.value"]
             },
-            "fruitPanel.lemonRating": {
-                "funcName": "{that}.conditionalBooleanApplier",
-                "args": ["fruitPanel.reallyLikesLemons", "{change}.value", ">=", 51]
-            },
             "fruitPanel.ateOtherFruit": {
                 "funcName": "{that}.conditionalBooleanApplier",
                 "args": ["fruitPanel.ateOtherFruitBool", "{change}.value", "===", "true"]
@@ -103,14 +99,15 @@
             templateLoader: {
                 options: {
                     resources: {
-                        bindingTemplate: "/src/html/fruitPanel-template.html"
+                        bindingTemplate: "/src/html/fruitPanel-template.html",
+                        page2Template: "/src/html/fruitPanel-template-page2.html"
                     }
                 }
             },
         }
     });
 
-    gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
+    var fruitPanel = gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
 
     </script>
 
