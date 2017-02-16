@@ -19,7 +19,7 @@
         selectors: {
             // Equivalent generated selectors
             // radioButtons: ".gpiic-binder-radio",
-            // checkboxes: ".gpiic-binder-checkbox",            
+            // checkboxes: ".gpiic-binder-checkbox",
             // favouriteFruit: ".gpiic-binder-favouriteFruit",
             // leastFavouriteFruit: ".gpiic-binder-leastFavouriteFruit"
         },
@@ -90,6 +90,7 @@
                 "method": "log",
                 "args": ["modelChange", "{change}.path", "{change}.value"]
             },
+            // Generates a boolean from the text value
             "fruitPanel.ateOtherFruit": {
                 "funcName": "{that}.conditionalBooleanApplier",
                 "args": ["fruitPanel.ateOtherFruitBool", "{change}.value", "===", "true"]
