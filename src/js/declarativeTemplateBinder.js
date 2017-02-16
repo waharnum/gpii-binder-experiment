@@ -41,6 +41,11 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
             funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
             args: ["{that}", "{that}.currentTemplate"],
             priority: "after:applyBinding"
+        },
+        "onTemplateChanged.generateEventListenersFromTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.generateEventListenersFromTemplate",
+            args: ["{that}", "{that}.currentTemplate"],
+            priority: "after:generateVisibilityHandlersFromTemplate"
         }
     },
     components: {
@@ -181,6 +186,27 @@ gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath = fu
 
 gpii.binder.declarativeTemplateBinder.showIf = function (value, oldValue, pathSegs) {
     gpii.binder.declarativeTemplateBinder.operateOnElementByAttributeChangePath(value, oldValue, pathSegs, "data-visibleIf", "show", "hide");
+};
+
+gpii.binder.declarativeTemplateBinder.generateEventListenersFromTemplate = function(that, template) {
+    var eventListenerDeclarations = gpii.binder.declarativeTemplateBinder.getDirectivesFromElementAttributes(template, "data-fluidInvoker");
+
+    fluid.each(eventListenerDeclarations, function (declaration) {
+        var selector, eventType, invoker;
+
+        selector = declaration.split(":")[0];
+        eventType = declaration.split(":")[1];
+        invoker = declaration.split(":")[2];
+
+        console.log(selector, eventType, invoker);
+
+        var element = that.locate(selector);
+        element[eventType](function (e) {
+            that[invoker]();
+            e.preventDefault();
+        });
+
+    });
 };
 
 // Parses an HTML template for binding-generation directives in this attribute style:
