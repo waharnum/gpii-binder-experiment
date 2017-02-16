@@ -1,36 +1,45 @@
 fluid.defaults("gpii.binder.declarativeTemplateBinder", {
     gradeNames: ["gpii.binder.bindOnDomChange", "fluid.viewComponent"],
     events: {
-        onTemplatesReady: null
+        onTemplatesReady: null,
+        onTemplateChanged: null
+    },
+    members: {
+        currentTemplate: ""
     },
     model: {
         generatedListenerBooleans: {}
     },
     listeners: {
-        "onTemplatesReady.appendBindingTemplate": {
+        "onTemplatesReady.setInitialTemplate": {
+            funcName: "gpii.binder.declarativeTemplateBinder.setInitialTemplate",
+            args: ["{that}"],
+            priority: "first"
+        },
+        "onTemplateChanged.appendBindingTemplate": {
             "this": "{that}.container",
-            "method": "append",
-            args: ["{templateLoader}.resources.bindingTemplate.resourceText"]
+            "method": "html",
+            args: ["{that}.currentTemplate"]
         },
 
-        "onTemplatesReady.generateSelectorsFromTemplate": {
+        "onTemplateChanged.generateSelectorsFromTemplate": {
             funcName: "gpii.binder.declarativeTemplateBinder.generateSelectorsFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            args: ["{that}", "{that}.currentTemplate"],
             priority: "after:appendBindingTemplate"
         },
-        "onTemplatesReady.generateBindingsFromTemplate": {
+        "onTemplateChanged.generateBindingsFromTemplate": {
             funcName: "gpii.binder.declarativeTemplateBinder.generateBindingsFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            args: ["{that}", "{that}.currentTemplate"],
             priority: "after:generateSelectorsFromTemplate"
         },
-        "onTemplatesReady.applyBinding": {
+        "onTemplateChanged.applyBinding": {
             "funcName": "gpii.binder.applyBinding",
             "args":     "{that}",
             priority: "after:generateBindingsFromTemplate"
         },
-        "onTemplatesReady.generateVisibilityHandlersFromTemplate": {
+        "onTemplateChanged.generateVisibilityHandlersFromTemplate": {
             funcName: "gpii.binder.declarativeTemplateBinder.generateVisibilityHandlersFromTemplate",
-            args: ["{that}", "{templateLoader}.resources.bindingTemplate.resourceText"],
+            args: ["{that}", "{that}.currentTemplate"],
             priority: "after:applyBinding"
         }
     },
@@ -57,9 +66,34 @@ fluid.defaults("gpii.binder.declarativeTemplateBinder", {
         conditionalBooleanApplier: {
             funcName: "gpii.binder.declarativeTemplateBinder.conditionalBooleanApplier",
             args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
+        },
+
+        replaceTemplate: {
+            funcName: "gpii.binder.declarativeTemplateBinder.replaceTemplate",
+            args: ["{that}"]
         }
     }
 });
+
+gpii.binder.declarativeTemplateBinder.setInitialTemplate = function (that) {
+    var initialTemplate = that.templateLoader.resources.bindingTemplate.resourceText;
+    that.currentTemplate = initialTemplate;
+    that.events.onTemplateChanged.fire();
+};
+
+// Replace the current template and redo all the bindings, while retaining the model
+gpii.binder.declarativeTemplateBinder.replaceTemplate = function (that) {
+
+    // Delete any generated listener booleans
+    that.applier.change("generatedListenerBooleans", {}, "DELETE");
+
+    // Clear selectors
+    that.options.selectors = {};
+
+    var replacement = that.templateLoader.resources.page2Template.resourceText;
+    that.currentTemplate = replacement;
+    that.events.onTemplateChanged.fire();
+};
 
 // Works with conditionalBooleanApplier to return true or false value based
 // on three-argument tests, i.e. "{change}.value", ">=", 95

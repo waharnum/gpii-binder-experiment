@@ -100,14 +100,15 @@
             templateLoader: {
                 options: {
                     resources: {
-                        bindingTemplate: "/src/html/fruitPanel-template.html"
+                        bindingTemplate: "/src/html/fruitPanel-template.html",
+                        page2Template: "/src/html/fruitPanel-template-page2.html"
                     }
                 }
             },
         }
     });
 
-    gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
+    var fruitPanel = gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
 
     </script>
 
