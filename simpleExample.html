@@ -5,6 +5,7 @@
         <script src="src/lib/gpii-binder/binder.js"></script>
         <script src="src/lib/gpii-binder/codingTransforms.js"></script>
         <script src="src/js/declarativeTemplateBinder.js"></script>
+        <link rel=stylesheet href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css">
     </head>
     <body>
         <h1>Valerian - Simple Example</h1>
@@ -14,7 +15,7 @@
     <script>
 
     // A concrete example
-    fluid.defaults("gpii.binder.declarativeTemplateBinder.fruitPanel", {
+    fluid.defaults("gpii.binder.declarativeTemplateBinder.simpleExample", {
         gradeNames: ["gpii.binder.declarativeTemplateBinder"],
         model: {
             "personalInformation": {
@@ -51,7 +52,7 @@
         }
     });
 
-    var fruitPanel = gpii.binder.declarativeTemplateBinder.fruitPanel(".gpiic-binder-form");
+    var simpleExample = gpii.binder.declarativeTemplateBinder.simpleExample(".gpiic-binder-form");
 
     </script>
 

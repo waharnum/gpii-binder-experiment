@@ -1,7 +1,11 @@
+<h2>Enter Your Personal Information</h2>
 <form>
-    <label>First Name <input data-valerianBinder="firstName:personalInformation.firstName" data-valerianSelector="firstName:.valerianc-firstName" class="valerianc-firstName" name="firstName" /> </label>
 
-    <label>Last Name <input data-valerianBinder="lastName:personalInformation.lastName" data-valerianSelector="lastName:.valerianc-lastName" class="valerianc-lastName" name="lastName" /> </label>
+    <p><label>First Name <input data-valerianBinder="firstName:personalInformation.firstName" data-valerianSelector="firstName:.valerianc-firstName" class="valerianc-firstName" name="firstName" /> </label></p>
 
-    <input type="submit" class="valerianc-submitButton" data-valerianSelector="submitButton:.valerianc-submitButton" data-valerianDOMEventBinder="submitButton:click:submitForConfirmation" />
+    <p><label>Last Name <input data-valerianBinder="lastName:personalInformation.lastName" data-valerianSelector="lastName:.valerianc-lastName" class="valerianc-lastName" name="lastName" /> </label></p>
+
+    <p><label>Age <input data-valerianBinder="age:personalInformation.age/stringToNumber" data-valerianSelector="age:.valerianc-age" class="valerianc-age" name="lastName" /> </label></p>
+
+    <p><input type="submit" class="valerianc-submitButton" data-valerianSelector="submitButton:.valerianc-submitButton" data-valerianDOMEventBinder="submitButton:click:submitForConfirmation" /></p>
 </form>

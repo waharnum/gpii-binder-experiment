@@ -49,7 +49,12 @@
      * */
     gpii.binder.changeElementValue = function (that, element, path, modelValue) {
         var transformedValue = gpii.binder.transformPathedValue(that, path, modelValue, "modelToDom");
-        fluid.value(element, transformedValue);
+        var isFormElement = gpii.binder.isFormElement(element);
+        if(isFormElement) {
+            fluid.value(element, transformedValue);
+        } else {
+            element.text(transformedValue);
+        }
     };
 
     /**
@@ -103,6 +108,12 @@
     };
 
 
+    gpii.binder.isFormElement = function (element) {
+        var elementTagName = element.prop("tagName");
+        var formTagNames = ["INPUT", "SELECT", "TEXTAREA"];
+        return fluid.contains(formTagNames, elementTagName);
+    };
+
     /**
      *
      * The main function to create bindings between markup and model elements.  See above for usage details.
@@ -116,15 +127,24 @@
             var selector = typeof value === "string" ? key : value.selector;
             var element = that.locate(selector);
 
+            var isFormElement = gpii.binder.isFormElement(element);
+
             if (element.length > 0) {
+
                 // Update the model when the form changes
-                element.change(function () {
-                    fluid.log("Changing model based on element update.");
+                if(isFormElement) {
+                    element.change(function () {
+                        fluid.log("Changing model based on element update.");
 
-                    gpii.binder.changeModelValue(that, path, fluid.value(element));
-                });
+                        gpii.binder.changeModelValue(that, path, fluid.value(element));
+                    });
+                }
 
-                // Update the form elements when the model changes
+                // TODO: an equivalent for non-form elements to bind
+                // DOM changes to models
+                // attach custom event?
+
+                // Update the element when the model changes
                 that.applier.modelChanged.addListener(path, function (changedValue) {
                     fluid.log("Changing value based on model update.");
                     gpii.binder.changeElementValue(that, element, path, changedValue);
